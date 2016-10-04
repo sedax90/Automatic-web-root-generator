@@ -15,4 +15,4 @@ A simple Bash script for creating a standard structure for all websites. Very us
 3. Check all settings for reflecting your configuration
 
 ##### Screenshots
-
+[![sc1.jpg](https://s9.postimg.org/5ascego33/sc1.jpg)](https://postimg.org/image/evbz1cdez/)
