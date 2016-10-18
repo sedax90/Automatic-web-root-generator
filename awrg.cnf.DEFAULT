@@ -1,4 +1,4 @@
-# Default parameters
+### Default parameters
 
 # Define where the virtual hosts needs to be saved 
 # Don't add the final /
@@ -11,22 +11,22 @@ web_root="/var/www"
 # Define the log folder path. Is relative to your user home, so don't user initial /
 log_folder="log"
 
-# Define the public folder to put your site
+# Define the public folder where to put your site
 public_folder="public_html"
 
-# Define the location of index sample file
+# Define the location of index.html sample file
 indexSample="indexSample.html"
 
-# Define your sites available Apache2 folder
+# Define your sites-available Apache2 folder
 # Don't add the final /
 sitesAvailable='/etc/apache2/sites-available'
 
-# Define your sites enabled Apache2 folder
+# Define your sites-enabled Apache2 folder
 # Don't add the final /
 sitesEnable='/etc/apache2/sites-enabled'
 
-# Define your apache listen port. If you use Varnish probably this will not be 80
+# Define your apache listen port. If you use Varnish or other reverse proxy, probably this will not to be 80
 apache_port='80'
 
 # Define the webmail for virtual host admin
-email='assistenza@dexanet.com'
+email='example@example.com'
