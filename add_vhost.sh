@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source awr.cnf
+source /etc/awrg/awrg.cnf
 
 backtitle="Webroot generator v0.0.1 - Created by Cristian Sedaboni"
 
@@ -105,7 +105,7 @@ generatePassword() {
 
 createUser() {
 	pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
-	useradd -m -p $pass $username -d "$web_root/$domain"
+	useradd -m -p $pass $username -d "$web_root/$domain" -s /bin/bash
 	[ $? -eq 0 ] && echo "User \"$username\" has been added to system  with password: $password" || echo "Failed to add a user!"
 }
 
