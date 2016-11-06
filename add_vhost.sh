@@ -1,12 +1,13 @@
 #!/bin/bash
+ABSOLUTE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source /etc/awrg/awrg.cnf
+source $ABSOLUTE_PATH/awrg.cnf
 
 backtitle="Webroot generator v0.0.1 - Created by Cristian Sedaboni"
 
-checkIfDialogIsInstalled() {
-	if [ $(dpkg-query -W -f='${Status}' dialog 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
-	  apt-get install dialog;
+checkIfWhiptailIsInstalled() {
+	if [ $(dpkg-query -W -f='${Status}' whiptail 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+	  apt-get install whiptail;
 	fi
 }
 
@@ -18,80 +19,59 @@ createWebRoot() {
 		echo "A directory for the domain $domain exists yet, please enter another domain"
 	else
 		mkdir $directory
-		echo "Created directory web root at: $web_root/$domain"
 	fi
 }
 
 inputDomain() {
-	dialog --backtitle "$backtitle" --inputbox \
-	"Insert website main domain, without http and www (Ex. test.it)" 10 80 2> /tmp/inputbox.tmp.$$
-	retval=$?
-	input=`cat /tmp/inputbox.tmp.$$`
-	rm -f /tmp/inputbox.tmp.$$
+	input=$(whiptail --backtitle "$backtitle" --inputbox \
+	"Insert website main domain, without http and www (Ex. test.it)" 10 80 3>&1 1>&2 2>&3)
+	exitstatus=$?
 
-	case $retval in
-		0) 
-		  	domain="$input"
-		  	;;
-		1) 
-			echo "Exiting..."
-			exit
-			;;
-	esac
+	if [ $exitstatus = 0 ]; then
+	    domain=$input
+	else
+	    echo "User selected Cancel."
+	    exit
+	fi
 }
 
 inputUser() {
-	dialog --backtitle "$backtitle" --inputbox \
-	"Insert the new user name" 10 80 "$username" 2> /tmp/inputbox.tmp.$$
-	retval=$?
-	input=`cat /tmp/inputbox.tmp.$$`
-	rm -f /tmp/inputbox.tmp.$$
+	input=$(whiptail --backtitle "$backtitle" --inputbox \
+	"Insert the new user name" 10 80 "$username" 3>&1 1>&2 2>&3)
+	exitstatus=$?
 
-	case $retval in
-		0) 
-			username=$input
-		  	;;
-		1) 
-			echo "Exiting..."
-			exit
-			;;
-	esac
+	if [ $exitstatus = 0 ]; then
+	    username=$input
+	else
+	    echo "User selected Cancel."
+	    exit
+	fi
 }
 
 inputPassword() {
-	dialog --backtitle "$backtitle" --inputbox \
-	"Change password (or use the generated below)" 10 80 "$password" 2> /tmp/inputbox.tmp.$$
-	retval=$?
-	input=`cat /tmp/inputbox.tmp.$$`
-	rm -f /tmp/inputbox.tmp.$$
+	input=$(whiptail --backtitle "$backtitle" --inputbox \
+	"Change password (or use the generated below)" 10 80 "$password" 3>&1 1>&2 2>&3)
+	exitstatus=$?
 
-	case $retval in
-		0) 
-			password=$input
-		  	;;
-		1) 
-			echo "Exiting..." 
-			exit
-			;;
-	esac
+	if [ $exitstatus = 0 ]; then
+	    password=$input
+	else
+	    echo "User selected Cancel."
+	    exit
+	fi
 }
 
 inputServerAlias() {
-	dialog --backtitle "$backtitle" --inputbox \
-	"Add Server Alias separated by space (Ex. test.com www.test.com))" 10 80 "www.$domain" 2> /tmp/inputbox.tmp.$$
-	retval=$?
-	input=`cat /tmp/inputbox.tmp.$$`
-	rm -f /tmp/inputbox.tmp.$$
+	input=$(whiptail --backtitle "$backtitle" --inputbox \
+	"Add Server Alias separated by space (Ex. test.com www.test.com))" 10 80 "www.$domain" 3>&1 1>&2 2>&3)
+	exitstatus=$?
 
-	case $retval in
-		0) 
-			aliases=$input
-		  	;;
-		1) 
-			echo "Exiting..." 
-			exit
-			;;
-	esac
+	if [ $exitstatus = 0 ]; then
+	    aliases=$input
+	else
+	    echo "User selected Cancel."
+	    exit
+	fi
 }
 
 generateUsername() {
@@ -106,7 +86,7 @@ generatePassword() {
 createUser() {
 	pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 	useradd -m -p $pass $username -d "$web_root/$domain" -s /bin/bash
-	[ $? -eq 0 ] && echo "User \"$username\" has been added to system  with password: $password" || echo "Failed to add a user!"
+	[ $? -eq 0 ] && echo "" || echo "Failed to add a user!"
 }
 
 assignPermissionsToWebRoot() {
@@ -114,7 +94,7 @@ assignPermissionsToWebRoot() {
 }
 
 errorDialog() {
-	dialog --backtitle "$backtitle" --msgbox "$message" 10 80
+	whiptail --backtitle "$backtitle" --msgbox "$message" 10 80
 }
 
 checkIfUserExists() {
@@ -179,9 +159,6 @@ enableApacheDomain() {
 
 	### restart Apache
 	/etc/init.d/apache2 reload
-
-	echo -e $"Complete! \nYou now have a new Virtual Host"
-	exit;
 }
 
 addLogAliases() {
@@ -189,6 +166,14 @@ addLogAliases() {
 
 	ln -s $directory/access.log /var/log/apache2/${domain/./-}-access.log
 	ln -s $directory/error.log /var/log/apache2/${domain/./-}-error.log
+}
+
+createSuccessfullMessage() {
+	whiptail --backtitle "$backtitle" --title "Successfull!" --msgbox "\
+	Created directory web root at: $web_root/$domain
+	Created new user with:
+	Username: $username
+	Password: $password" 10 80
 }
 
 # --- START ---
@@ -199,7 +184,7 @@ if [ "$(whoami)" != "root" ]; then
 	exit 2
 fi
 
-checkIfDialogIsInstalled
+checkIfWhiptailIsInstalled
 
 # assign domain
 while [ -z "$domain" ] ; do
@@ -231,5 +216,5 @@ inputServerAlias aliases
 addLogAliases
 writeVirtualHost
 enableApacheDomain
-
+createSuccessfullMessage
 
