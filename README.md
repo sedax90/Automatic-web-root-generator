@@ -1,18 +1,20 @@
 # Automatic Web Root Generator
 A simple Bash script for creating a standard structure for all websites. Very usefull if are going to manage a webserver without Cpanel or similar software.
 
-#### How to install
----
-##### Install
- 1. git clone https://github.com/CRYX2/Automatic-web-root-generator.git awrg 
- 2. sudo mv awrg /etc/awrg
- 3. sudo chmod +x /etc/awrg/add_vhost.sh
- 4. sudo ln -s /etc/awrg/add_vhost.sh /usr/local/sbin/add_vhost
+### How to install
+##### Basic installation
+
+    git clone https://github.com/CRYX2/Automatic-web-root-generator.git awrg 
+    sudo mv awrg /etc/awrg
+    sudo chmod +x /etc/awrg/add_vhost.sh
+    sudo ln -s /etc/awrg/add_vhost.sh /usr/local/sbin/add_vhost
 
 ##### Edit configuration
-1. sudo cp /etc/awrg/awrg.cnf.DEFAULT /etc/awrg/awrg.cnf
-2. sudo vi /etc/awrg/awrg.cnf
-3. Check all settings for reflecting your configuration
+
+    sudo cp /etc/awrg/awrg.cnf.DEFAULT /etc/awrg/awrg.cnf
+    sudo vi /etc/awrg/awrg.cnf
+
+Check all settings for reflecting your configuration
 
 ##### How to use
 `sudo add_vhost`
@@ -20,4 +22,4 @@ A simple Bash script for creating a standard structure for all websites. Very us
 Enjoy :)
 
 ##### Screenshots
-![sc1](https://cloud.githubusercontent.com/assets/5001801/19471000/d61ca4d8-9521-11e6-8006-a0f3867be647.jpg)
+![sc1](https://cloud.githubusercontent.com/assets/5001801/20036465/556106c6-a409-11e6-8a27-fc72486f63c6.PNG)
