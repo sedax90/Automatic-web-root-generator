@@ -1,9 +1,8 @@
 #!/bin/bash
-ABSOLUTE_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-source $ABSOLUTE_PATH/awrg.cnf
+source $(pwd)/awrg.cnf
 
-backtitle="Webroot generator v0.0.1 - Created by Cristian Sedaboni"
+backtitle="Webroot generator - Created by Cristian Sedaboni"
 
 checkIfWhiptailIsInstalled() {
 	if [ $(dpkg-query -W -f='${Status}' whiptail 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
