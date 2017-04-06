@@ -26,6 +26,8 @@ Check all settings for reflecting your configuration
 
 Enjoy :)
 
+PS. Actually it works only with bash, NOT with fish or zsh
+
 ##### Screenshots
 ![sc1](https://cloud.githubusercontent.com/assets/5001801/20036465/556106c6-a409-11e6-8a27-fc72486f63c6.PNG)
 
