@@ -156,6 +156,8 @@ enableApacheDomain() {
 createLogFolder() {
 	touch "${apache_log_dir}/${domain/./-}--access.log"
 	touch "${apache_log_dir}/${domain/./-}--error.log"
+	chmod 775 "${apache_log_dir}/${domain/./-}--access.log"
+	chmod 775 "${apache_log_dir}/${domain/./-}--error.log"
 }
 
 addLogAliases() {
@@ -178,7 +180,7 @@ createSuccessfullMessage() {
 
 # permissions
 if [ "$(whoami)" != "root" ]; then
-	echo "Root privileges are required to run this, try running with sudo..."
+	echo "Sudo privileges are required to run this command."
 	exit 2
 fi
 
