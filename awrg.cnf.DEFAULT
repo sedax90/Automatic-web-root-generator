@@ -30,3 +30,6 @@ apache_port='80'
 
 # Define the webmail for virtual host admin
 email='example@example.com'
+
+# Don't add the final /
+apache_log_dir="/var/log/apache2"

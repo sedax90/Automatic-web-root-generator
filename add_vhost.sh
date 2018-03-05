@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(pwd)/awrg.cnf
+. "${PWD}/awrg.cnf"
 
 backtitle="Webroot generator - Created by Cristian Sedaboni"
 
@@ -101,13 +101,6 @@ checkIfUserExists() {
 	getent passwd $username >/dev/null 2>&1 && ret=true
 }
 
-createLogFolder() {
-	local directory="$web_root/$domain/$log_folder"
-	mkdir $directory
-	touch "$directory/access.log"
-	touch "$directory/error.log"
-}
-
 createPublicHtmlFolder(){
 	local directory="$web_root/$domain/$public_folder"
 	mkdir $directory
@@ -140,9 +133,9 @@ writeVirtualHost() {
 		AllowOverride all
 		Require all granted
 	</Directory>
-	ErrorLog $web_root/$domain/log/error.log
+	ErrorLog ${apache_log_dir}/${domain/./-}--error.log
 	LogLevel error
-	CustomLog $web_root/$domain/log/access.log combined
+	CustomLog ${apache_log_dir}/${domain/./-}--access.log combined
 </VirtualHost>" >> $vh
 	then
 		echo -e $"There is an ERROR creating $domain file"
@@ -160,11 +153,19 @@ enableApacheDomain() {
 	/etc/init.d/apache2 reload
 }
 
-addLogAliases() {
-	local directory="$web_root/$domain/$log_folder"
+createLogFolder() {
+	touch "${apache_log_dir}/${domain/./-}--access.log"
+	touch "${apache_log_dir}/${domain/./-}--error.log"
+	chmod 775 "${apache_log_dir}/${domain/./-}--access.log"
+	chmod 775 "${apache_log_dir}/${domain/./-}--error.log"
+}
 
-	ln -s $directory/access.log /var/log/apache2/${domain/./-}-access.log
-	ln -s $directory/error.log /var/log/apache2/${domain/./-}-error.log
+addLogAliases() {
+	local site_log_directory="$web_root/$domain/$log_folder"
+	mkdir "${site_log_directory}"
+
+	ln -s ${apache_log_dir}/${domain/./-}--access.log "${site_log_directory}/access.log"
+	ln -s ${apache_log_dir}/${domain/./-}--error.log "${site_log_directory}/error.log"
 }
 
 createSuccessfullMessage() {
@@ -179,7 +180,7 @@ createSuccessfullMessage() {
 
 # permissions
 if [ "$(whoami)" != "root" ]; then
-	echo "Root privileges are required to run this, try running with sudo..."
+	echo "Sudo privileges are required to run this command."
 	exit 2
 fi
 
