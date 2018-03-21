@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. "${PWD}/awrg.cnf"
+DIR=$(dirname "$(readlink -f "$0")")
+
+. "$DIR/awrg.cnf"
 
 backtitle="Webroot generator - Created by Cristian Sedaboni"
 
@@ -72,7 +74,7 @@ inputServerAlias() {
 	    exit
 	fi
 }
-
+. "${PWD}/awrg.cnf"
 generateUsername() {
 	local original="$domain"
 	username="${original/./_}"
@@ -156,8 +158,12 @@ enableApacheDomain() {
 createLogFolder() {
 	touch "${apache_log_dir}/${domain/./-}--access.log"
 	touch "${apache_log_dir}/${domain/./-}--error.log"
+	
 	chmod 775 "${apache_log_dir}/${domain/./-}--access.log"
 	chmod 775 "${apache_log_dir}/${domain/./-}--error.log"
+
+	chown $username:www-data "${apache_log_dir}/${domain/./-}--access.log"
+	chown $username:www-data "${apache_log_dir}/${domain/./-}--error.log"
 }
 
 addLogAliases() {
