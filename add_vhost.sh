@@ -1,6 +1,8 @@
 #!/bin/bash
 
-. "${PWD}/awrg.cnf"
+DIR=$(dirname "$(readlink -f "$0")")
+
+. "$DIR/awrg.cnf"
 
 backtitle="Webroot generator - Created by Cristian Sedaboni"
 
@@ -72,7 +74,7 @@ inputServerAlias() {
 	    exit
 	fi
 }
-
+. "${PWD}/awrg.cnf"
 generateUsername() {
 	local original="$domain"
 	username="${original/./_}"
