@@ -158,8 +158,12 @@ enableApacheDomain() {
 createLogFolder() {
 	touch "${apache_log_dir}/${domain/./-}--access.log"
 	touch "${apache_log_dir}/${domain/./-}--error.log"
+	
 	chmod 775 "${apache_log_dir}/${domain/./-}--access.log"
 	chmod 775 "${apache_log_dir}/${domain/./-}--error.log"
+
+	chown $username:www-data "${apache_log_dir}/${domain/./-}--access.log"
+	chown $username:www-data "${apache_log_dir}/${domain/./-}--error.log"
 }
 
 addLogAliases() {
