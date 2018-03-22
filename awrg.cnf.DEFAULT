@@ -33,3 +33,6 @@ email='example@example.com'
 
 # Don't add the final /
 apache_log_dir="/var/log/apache2"
+
+# Define if the apache group must be used during permissions assignment (it must be 0 or 1)
+use_apache_group=1

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DIR=$(dirname "$(readlink -f "$0")")
-
 . "$DIR/awrg.cnf"
 
 backtitle="Webroot generator - Created by Cristian Sedaboni"
@@ -90,8 +89,17 @@ createUser() {
 	[ $? -eq 0 ] && echo "" || echo "Failed to add a user!"
 }
 
+getGroup() {
+	if [[ ${use_apache_group} == 1 ]]; then
+		group=`ps axo user,group,comm | egrep '(apache|httpd)' | grep -v ^root | cut -d\  -f 2| uniq`
+	else
+		group=$username
+	fi
+}
+
 assignPermissionsToWebRoot() {
-	chown $username:www-data $web_root/$domain -R
+	getGroup group
+	chown $username:$group $web_root/$domain -R
 }
 
 errorDialog() {
@@ -123,6 +131,8 @@ assignVirtualHostFilename() {
 
 writeVirtualHost() {
 	local vh="$sitesAvailable/$virtualHostFilename.conf"
+	getGroup group
+	
 	touch $vh
 	if ! echo "
 <VirtualHost *:$apache_port>
@@ -131,13 +141,16 @@ writeVirtualHost() {
 	ServerAlias $aliases
 	DocumentRoot $web_root/$domain/$public_folder
 	<Directory $web_root/$domain/$public_folder>
-		Options Indexes FollowSymLinks MultiViews
+		Options -Indexes +FollowSymLinks +MultiViews
 		AllowOverride all
 		Require all granted
 	</Directory>
 	ErrorLog ${apache_log_dir}/${domain/./-}--error.log
 	LogLevel error
 	CustomLog ${apache_log_dir}/${domain/./-}--access.log combined
+	<IfModule mpm_itk_module>
+		AssignUserId $username $group
+	</IfModule>
 </VirtualHost>" >> $vh
 	then
 		echo -e $"There is an ERROR creating $domain file"
@@ -156,14 +169,16 @@ enableApacheDomain() {
 }
 
 createLogFolder() {
+	getGroup group
+
 	touch "${apache_log_dir}/${domain/./-}--access.log"
 	touch "${apache_log_dir}/${domain/./-}--error.log"
 	
 	chmod 775 "${apache_log_dir}/${domain/./-}--access.log"
 	chmod 775 "${apache_log_dir}/${domain/./-}--error.log"
 
-	chown $username:www-data "${apache_log_dir}/${domain/./-}--access.log"
-	chown $username:www-data "${apache_log_dir}/${domain/./-}--error.log"
+	chown $username:$group "${apache_log_dir}/${domain/./-}--access.log"
+	chown $username:$group "${apache_log_dir}/${domain/./-}--error.log"
 }
 
 addLogAliases() {
